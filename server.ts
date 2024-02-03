@@ -94,7 +94,9 @@ async function handler(request: Request): Promise<Response> {
     headers: {
       "Content-Type": m === "gif" ? "image/gif" : "image/png",
       "Cache-Control": "public, max-age=31536000",
-      "Content-Disposition": `inline; filename="${file.split("/").pop()}"`,
+      "Content-Disposition": `inline; filename="${width}x${height}.${
+        m === "gif" ? "gif" : "png"
+      }"`,
     },
   });
 }
