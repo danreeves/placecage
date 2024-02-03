@@ -17,8 +17,6 @@ const images = listImages("./images/source/placecage");
 const gifs = listImages("./images/source/placecage/gifs");
 const crazies = listImages("./images/source/placecage/crazy");
 
-console.log(images);
-
 async function handler(request: Request): Promise<Response> {
   const { pathname: path, origin } = new URL(request.url);
 
@@ -58,14 +56,11 @@ async function handler(request: Request): Promise<Response> {
     width = m;
   }
 
-  console.log({ m, height, width });
-
   const vegas = makeSeededGenerators(`${m}${height}${width}`);
 
   const list = m === "gif" ? gifs : m === "c" ? crazies : images;
 
   const file = vegas.randomPick(list);
-  console.log(file);
   const src = await Deno.readFile(file);
 
   const tool = m === "gif" ? GIF : Image;
@@ -86,6 +81,8 @@ async function handler(request: Request): Promise<Response> {
   }
 
   const data = await img.encode();
+
+  console.log({ path, file, params: { m, height, width } });
 
   return new Response(data, {
     status: 200,
