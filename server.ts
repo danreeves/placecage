@@ -1,4 +1,8 @@
-import { Image, GIF } from "https://deno.land/x/imagescript@1.2.17/mod.ts";
+import {
+  Image,
+  GIF,
+  Frame,
+} from "https://deno.land/x/imagescript@1.2.17/mod.ts";
 import { makeSeededGenerators } from "https://deno.land/x/vegas@v1.3.0/mod.ts";
 
 function listImages(path: string) {
@@ -13,6 +17,8 @@ const crazies = listImages("./images/source/placecage/crazy");
 
 async function handler(request: Request): Promise<Response> {
   const { pathname: path, origin } = new URL(request.url);
+
+  console.log(path);
 
   if (path == "/") {
     const index = Deno.readTextFileSync("./public/placecage/index.html");
@@ -55,18 +61,21 @@ async function handler(request: Request): Promise<Response> {
   const list = m === "gif" ? gifs : m === "c" ? crazies : images;
 
   const file = vegas.randomPick(list);
-  console.log(file);
   const src = await Deno.readFile(file);
 
   const tool = m === "gif" ? GIF : Image;
 
-  const img = await tool.decode(src);
+  let img = await tool.decode(src);
+
+  //   console.log({ ...img });
 
   if ("cover" in img) {
     img.cover(parseInt(width), parseInt(height));
   } else {
-    // TODO: Gifs don't support contain
-    img.resize(parseInt(width), parseInt(height));
+    const frames = [...img].map((frame) =>
+      Frame.from(frame.cover(parseInt(width), parseInt(height)), frame.duration)
+    );
+    img = new GIF(frames);
   }
 
   if (m === "g" && "saturation" in img) {
