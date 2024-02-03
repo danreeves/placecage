@@ -72,8 +72,6 @@ async function handler(request: Request): Promise<Response> {
 
   let img = await tool.decode(src);
 
-  //   console.log({ ...img });
-
   if ("cover" in img) {
     img.cover(parseInt(width), parseInt(height));
   } else {
@@ -94,6 +92,7 @@ async function handler(request: Request): Promise<Response> {
     headers: {
       "Content-Type": m === "gif" ? "image/gif" : "image/png",
       "Cache-Control": "public, max-age=604800",
+      "Content-Disposition": `inline; filename="${file.split("/").pop()}"`,
     },
   });
 }
