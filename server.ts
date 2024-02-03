@@ -6,14 +6,18 @@ import {
 import { makeSeededGenerators } from "https://deno.land/x/vegas@v1.3.0/mod.ts";
 
 function listImages(path: string) {
-  return Array.from(Deno.readDirSync(path)).map((file) => {
-    return path + "/" + file.name;
-  });
+  return Array.from(Deno.readDirSync(path))
+    .filter((file) => !file.isDirectory)
+    .map((file) => {
+      return path + "/" + file.name;
+    });
 }
 
 const images = listImages("./images/source/placecage");
 const gifs = listImages("./images/source/placecage/gifs");
 const crazies = listImages("./images/source/placecage/crazy");
+
+console.log(images);
 
 async function handler(request: Request): Promise<Response> {
   const { pathname: path, origin } = new URL(request.url);
