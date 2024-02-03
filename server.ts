@@ -61,6 +61,7 @@ async function handler(request: Request): Promise<Response> {
   const list = m === "gif" ? gifs : m === "c" ? crazies : images;
 
   const file = vegas.randomPick(list);
+  console.log(file);
   const src = await Deno.readFile(file);
 
   const tool = m === "gif" ? GIF : Image;
