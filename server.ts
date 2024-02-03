@@ -6,16 +6,21 @@ import {
 import { makeSeededGenerators } from "https://deno.land/x/vegas@v1.3.0/mod.ts";
 
 function listImages(path: string) {
-  return Array.from(Deno.readDirSync(path))
-    .filter((file) => !file.isDirectory)
-    .map((file) => {
-      return path + "/" + file.name;
-    });
+  try {
+    return Array.from(Deno.readDirSync(path))
+      .filter((file) => !file.isDirectory)
+      .map((file) => {
+        return path + "/" + file.name;
+      });
+  } catch (_e) {
+    return [];
+  }
 }
 
-const images = listImages("./images/source/placecage");
-const gifs = listImages("./images/source/placecage/gifs");
-const crazies = listImages("./images/source/placecage/crazy");
+const DIR = Deno.env.get("DIR") || "placecage";
+const images = listImages(`./images/source/${DIR}`);
+const gifs = listImages(`./images/source/${DIR}/gifs`);
+const crazies = listImages(`./images/source/${DIR}/crazy`);
 
 async function handler(request: Request): Promise<Response> {
   const { pathname: path, origin } = new URL(request.url);
@@ -23,7 +28,7 @@ async function handler(request: Request): Promise<Response> {
   console.log(path);
 
   if (path == "/") {
-    const index = Deno.readTextFileSync("./public/placecage/index.html");
+    const index = Deno.readTextFileSync(`./public/${DIR}/index.html`);
     return new Response(index.replaceAll("{{DOMAIN}}", origin), {
       status: 200,
       headers: { "Content-Type": "text/html" },
