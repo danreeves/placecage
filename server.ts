@@ -22,6 +22,13 @@ async function handler(request: Request): Promise<Response> {
     });
   }
 
+  if (path === "/robots.txt") {
+    return new Response("User-agent: *\nDisallow: /", {
+      status: 200,
+      headers: { "Content-Type": "text/plain" },
+    });
+  }
+
   if (path == "/content/global.css") {
     const css = Deno.readTextFileSync("./public/content/global.css");
     return new Response(css, {
